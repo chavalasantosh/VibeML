@@ -1,0 +1,78 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test & coverage caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local MLOps outputs & experiment runs (no trash in repo)
+catboost_info/
+mlops_deliverables/
+mlops_workspace/
+runs/
+models/
+candidates/
+*.joblib
+*.csv
+*.tsv
+*.parquet
+*.db
+*.sqlite
+*.log
+.opsforge/
+
+# Whitelist release evidence data
+!release-evidence/*.csv
+
+# Legacy scratch development files
+auto_docker.py
+opsforge.py
+opsforgenopra.py
+PLAN.md
+KNOWN_ISSUES.md
+release_gates.json
+TEST_REPORT.md
+practice.csv
