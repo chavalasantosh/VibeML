@@ -4,36 +4,16 @@ __pycache__/
 *$py.class
 *.so
 
-# C extensions
-*.so
-
-# Distribution / packaging
+# Distribution & Packaging
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
 
 # Virtual environments
 .env
-.venv
+.venv/
 env/
 venv/
-ENV/
-env.bak/
-venv.bak/
 
 # IDE & Editor files
 .vscode/
@@ -48,7 +28,7 @@ venv.bak/
 .coverage
 htmlcov/
 
-# Local MLOps outputs & experiment runs (no trash in repo)
+# Local MLOps outputs & experiment runs
 catboost_info/
 mlops_deliverables/
 mlops_workspace/
@@ -64,10 +44,7 @@ candidates/
 *.log
 .opsforge/
 
-# Whitelist release evidence data
-!release-evidence/*.csv
-
-# Legacy scratch development files
+# Legacy, scratch and local development files
 auto_docker.py
 opsforge.py
 opsforgenopra.py
@@ -76,3 +53,11 @@ KNOWN_ISSUES.md
 release_gates.json
 TEST_REPORT.md
 practice.csv
+enterprise_automl.py
+requirements-lock.txt
+RELEASE_NOTES.md
+CHANGELOG.md
+SECURITY.md
+CONTRIBUTING.md
+release-evidence/
+examples/

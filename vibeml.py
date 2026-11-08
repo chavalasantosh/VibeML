@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""Single-file dual-mode AutoML + local MLOps engine (independent registry + champion).
+"""VibeML 1.0.0 — Autonomous Machine Learning & MLOps Engine.
 
-20 classical ML models (10 regression, 10 classification), bounded model search,
-leakage-safe cross-validation, holdout evaluation, versioning, champion promotion,
-prediction, lightweight serving, drift monitoring, rollback, optional MLflow.
+Single-file AutoML + local MLOps engine: 37 ML models across 5 workloads,
+leakage-free feature engineering, Cartesian experiment universe execution,
+cryptographic SHA-256 event ledger, automated FastAPI microservice & Docker generation.
 
-Dependencies: pip install numpy pandas scipy scikit-learn joblib
-Optional:     pip install mlflow
-
-Run: python enterprise_automl_v3_2.py   (interactive)
-Expert: python enterprise_automl_v3_2.py --help
+Dependencies: pip install -r requirements.txt
+Run:          python vibeml.py          (interactive guided workbench)
+Expert CLI:   python vibeml.py --help
 """
 from __future__ import annotations
 
@@ -338,7 +336,9 @@ class UniversalGaussianMixture(GaussianMixture):
         return self
 
 
-# Guarantee serialization lookup
+# Guarantee serialization lookup across aliases
+sys.modules.setdefault('vibeml', sys.modules[__name__])
+sys.modules.setdefault('enterprise_automl', sys.modules[__name__])
 sys.modules.setdefault('enterprise_automl_v3_2', sys.modules[__name__])
 setattr(sys.modules['enterprise_automl_v3_2'], 'UniversalDBSCAN', UniversalDBSCAN)
 setattr(sys.modules['enterprise_automl_v3_2'], 'UniversalGaussianMixture', UniversalGaussianMixture)
@@ -761,7 +761,7 @@ setattr(sys.modules['enterprise_automl_v3_2'], 'ARIMAForecaster', ARIMAForecaste
 setattr(sys.modules['enterprise_automl_v3_2'], 'ETSForecaster', ETSForecaster)
 setattr(sys.modules['enterprise_automl_v3_2'], 'CalibratedAnomalyDetector', CalibratedAnomalyDetector)
 
-VERSION = '1.0.0-alpha.1'
+VERSION = '1.0.0'
 
 DEFAULT_METRIC = {'regression': 'neg_root_mean_squared_error', 'classification': 'f1_macro'}
 CV_METRICS = {
@@ -8261,8 +8261,8 @@ def _save_session(session):
 def guided_home():
     session = _load_session()
     print('\n' + '=' * 64)
-    print(' ENTERPRISE AUTOML v5.7.0 | FULL EXPERIMENT UNIVERSE & TRACEABILITY ENGINE')
-    print(' One Python file · No mandatory arguments · Expert CLI preserved')
+    print(f' VIBEML v{VERSION} | AUTONOMOUS MACHINE LEARNING & MLOPS ENGINE')
+    print(' One Python file · 37 Models · 5 Workloads · Traceability Engine')
     print('=' * 64)
     print(f' System: {os.cpu_count() or "unknown"} logical CPU threads | Current workspace: {session["workspace"]}')
     while True:
