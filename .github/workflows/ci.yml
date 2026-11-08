@@ -1,4 +1,4 @@
-name: VibeML CI
+name: VibeML Production CI
 
 on:
   push:
@@ -7,27 +7,68 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  hygiene:
+    name: Repository Cleanliness & Syntax Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check for Unwanted Trash Artifacts
+        run: |
+          echo "Verifying zero unwanted files in repository..."
+          ILLEGAL_FILES=$(find . -maxdepth 3 -type f \( \
+            -name "*.csv" -o \
+            -name "*.bak" -o \
+            -name "*.tmp" -o \
+            -name "*.joblib" -o \
+            -name "*.log" -o \
+            -name "*_notes.txt" -o \
+            -name ".DS_Store" \
+          \) ! -path "./.git/*")
+          if [ -n "$ILLEGAL_FILES" ]; then
+            echo "ERROR: Disallowed trash files detected in repository:"
+            echo "$ILLEGAL_FILES"
+            exit 1
+          fi
+          echo "Cleanliness check passed: zero trash files detected."
+
+      - name: Validate Python Syntax & Compilation
+        run: |
+          python -m py_compile vibeml.py
+          python -m py_compile tests/test_vibeml.py
+          echo "Bytecode compilation passed with zero errors."
+
+  matrix-test:
+    name: Test Gates (${{ matrix.os }} - Py${{ matrix.python-version }})
+    needs: hygiene
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout Source
+        uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install Runtime Dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
 
-    - name: Run VibeML Verification Gates
-      run: |
-        python tests/test_vibeml.py
+      - name: Execute 5 Automated VibeML Verification Gates
+        run: |
+          python tests/test_vibeml.py

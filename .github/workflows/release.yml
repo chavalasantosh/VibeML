@@ -1,0 +1,63 @@
+name: Production Release & Docker Packaging
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  package-and-release:
+    name: Build Packages & Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Build Tools
+        run: |
+          python -m pip install --upgrade pip build wheel
+
+      - name: Build Python Distribution (sdist & wheel)
+        run: |
+          python -m build
+
+      - name: Generate Cryptographic SHA-256 Checksums
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          cd ..
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image Smoke Test
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: vibeml:${{ github.ref_name }}
+          load: true
+
+      - name: Test Docker Container Smoke Execution
+        run: |
+          docker run --rm vibeml:${{ github.ref_name }} --version
+          docker run --rm vibeml:${{ github.ref_name }} test-optimize
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/*
+          generate_release_notes: true

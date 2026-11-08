@@ -1,9 +1,11 @@
 # VibeML — Autonomous Machine Learning & MLOps Engine
 
+[![CI](https://github.com/chavalasantosh/VibeML/actions/workflows/ci.yml/badge.svg)](https://github.com/chavalasantosh/VibeML/actions/workflows/ci.yml)
+[![Security Audit](https://github.com/chavalasantosh/VibeML/actions/workflows/security.yml/badge.svg)](https://github.com/chavalasantosh/VibeML/actions/workflows/security.yml)
+[![Production Release](https://github.com/chavalasantosh/VibeML/actions/workflows/release.yml/badge.svg)](https://github.com/chavalasantosh/VibeML/actions/workflows/release.yml)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-brightgreen.svg)](pyproject.toml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-brightgreen.svg)](pyproject.toml)
-[![Release](https://img.shields.io/badge/Release-1.0.0-orange.svg)](CHANGELOG.md)
-[![CI](https://github.com/chavalasantosh/VibeML/actions/workflows/ci.yml/badge.svg)](https://github.com/chavalasantosh/VibeML/actions)
+[![Release](https://img.shields.io/badge/Release-1.0.0-orange.svg)](https://github.com/chavalasantosh/VibeML/releases)
 
 > **One source application. Five supported ML workloads. Every configured experiment accounted for. Every decision traceable. Reproducible end-to-end results.**
 
@@ -26,12 +28,41 @@
 
 ---
 
+## Repository Structure (Minimalist Production Clean)
+
+```
+VibeML/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml            # Multi-OS matrix tests & cleanliness check
+│       ├── security.yml      # Bandit SAST & pip-audit vulnerability scanner
+│       └── release.yml       # Automated Python packaging & Docker build
+├── tests/
+│   └── test_vibeml.py        # Complete 5-gate automated verification suite
+├── .gitignore                # Production ignore rules (zero trash / cache / dumps)
+├── Dockerfile                # Hardened non-root Python 3.11-slim container
+├── LICENSE                   # Apache 2.0 Open-Source License
+├── pyproject.toml            # PEP 517 build specification & CLI entrypoint
+├── README.md                 # Documentation and quickstart guide
+├── requirements.txt          # Production runtime dependencies
+└── vibeml.py                 # Self-contained Master Engine (8,350+ LOC)
+```
+
+---
+
 ## Installation
 
+### From Source
 ```bash
 git clone https://github.com/chavalasantosh/VibeML.git
 cd VibeML
 pip install -r requirements.txt
+```
+
+### Docker
+```bash
+docker build -t vibeml .
+docker run --rm vibeml --help
 ```
 
 ---
