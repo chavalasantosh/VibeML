@@ -36,6 +36,18 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+# Ensure UTF-8 stream output across Windows and POSIX runners
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+if hasattr(sys.stderr, 'reconfigure'):
+    try:
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -2489,7 +2501,7 @@ def load_frame(source, sql=None, *, max_bytes=100_000_000, max_messages=2000):
         with sqlite3.connect(f'file:{Path(db).resolve()}?mode=ro', uri=True) as con:
             df = pd.read_sql_query(sql, con)
     elif source.startswith(('https://', 'http://')):
-        with urllib.request.urlopen(source, timeout=15) as response:
+        with urllib.request.urlopen(source, timeout=15) as response:  # nosec B310
             if response.headers.get('Content-Length') and int(response.headers['Content-Length']) > max_bytes:
                 raise ValueError('HTTP response is too large.')
             raw = response.read(max_bytes + 1)
@@ -4972,8 +4984,8 @@ def test_compat_cmd(args):
                 res_row['multi'] = 'PASS'
 
                 with tempfile.NamedTemporaryFile(suffix='.joblib', delete=False) as tf:
-                    joblib.dump(pipe_bin, tf.name)
                     tpath = tf.name
+                joblib.dump(pipe_bin, tpath)
                 reloaded = joblib.load(tpath)
                 assert (reloaded.predict(df_bin[:5]) == pred_bin).all()
                 Path(tpath).unlink(missing_ok=True)
@@ -4987,8 +4999,8 @@ def test_compat_cmd(args):
                 res_row['regress'] = 'PASS'
 
                 with tempfile.NamedTemporaryFile(suffix='.joblib', delete=False) as tf:
-                    joblib.dump(pipe_reg, tf.name)
                     tpath = tf.name
+                joblib.dump(pipe_reg, tpath)
                 reloaded = joblib.load(tpath)
                 assert np.allclose(reloaded.predict(df_reg[:5]), pred_reg)
                 Path(tpath).unlink(missing_ok=True)
@@ -5001,8 +5013,8 @@ def test_compat_cmd(args):
                 assert len(pred_cl) == 5
                 res_row['regress'] = f'PASS (k={len(set(pred_cl))})'
                 with tempfile.NamedTemporaryFile(suffix='.joblib', delete=False) as tf:
-                    joblib.dump(pipe_cl, tf.name)
                     tpath = tf.name
+                joblib.dump(pipe_cl, tpath)
                 reloaded = joblib.load(tpath)
                 assert (reloaded.predict(df_reg[:5]) == pred_cl).all()
                 Path(tpath).unlink(missing_ok=True)
@@ -5015,8 +5027,8 @@ def test_compat_cmd(args):
                 assert len(pred_an) == 5
                 res_row['regress'] = 'PASS (outl)'
                 with tempfile.NamedTemporaryFile(suffix='.joblib', delete=False) as tf:
-                    joblib.dump(pipe_an, tf.name)
                     tpath = tf.name
+                joblib.dump(pipe_an, tpath)
                 reloaded = joblib.load(tpath)
                 assert (reloaded.predict(df_reg[:5]) == pred_an).all()
                 Path(tpath).unlink(missing_ok=True)
@@ -5781,10 +5793,11 @@ def test_optimize_cmd(args):
     assert np.array_equal(p_batch, p_single)
     # Serialization check
     with tempfile.NamedTemporaryFile(suffix='.joblib', delete=False) as tf:
-        joblib.dump(pipe, tf.name)
-        reloaded = joblib.load(tf.name)
+        tpath = tf.name
+    joblib.dump(pipe, tpath)
+    reloaded = joblib.load(tpath)
     assert np.array_equal(reloaded.predict(df_cls[:5]), p_batch)
-    Path(tf.name).unlink(missing_ok=True)
+    Path(tpath).unlink(missing_ok=True)
     print(f"[PASS] OPT-05 | Parity & Serialization | Single vs Batch match & Zero-Leakage ({time.time() - t0:.2f}s)")
 
     # GATE 06: Planner Audit & Recommendation Verification

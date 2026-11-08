@@ -35,3 +35,4 @@ jobs:
       - name: Dependency Vulnerability Audit
         run: |
           pip-audit -r requirements.txt || true
+

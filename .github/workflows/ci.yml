@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  PYTHONIOENCODING: utf-8
+  PYTHONUTF8: "1"
+
 jobs:
   hygiene:
     name: Repository Cleanliness & Syntax Gate

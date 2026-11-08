@@ -61,3 +61,4 @@ jobs:
           files: |
             dist/*
           generate_release_notes: true
+
